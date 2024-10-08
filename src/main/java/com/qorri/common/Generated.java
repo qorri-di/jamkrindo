@@ -1,18 +1,20 @@
 package com.qorri.common;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.text.*;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
+import java.util.*;
 
 public class Generated {
-    private static ZoneId jakartaZone = ZoneId.of("Asia/Jakarta");
+    private static final ZoneId jakartaZone = ZoneId.of("Asia/Jakarta");
 
-    public static Integer genId(){
+    public static String genId(String code){
+        UUID uuid = UUID.randomUUID();
         LocalDateTime currentTime = LocalDateTime.now(jakartaZone);
-        String formattedTime = currentTime.format(DateTimeFormatter.ofPattern("yyyyddMMss"));
-        return Integer.valueOf(formattedTime);
+        String formattedTime = currentTime.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+        String uuidStr = uuid.toString().replace("-", "");
+        String lastSevenDigits = uuidStr.length() >= 7 ? uuidStr.substring(uuidStr.length() - 7) : uuidStr;
+        return code+formattedTime+lastSevenDigits;
     }
 
     public static Date convertDate(String str){
