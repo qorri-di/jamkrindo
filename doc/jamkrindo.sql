@@ -47,3 +47,16 @@ CREATE TABLE public.trx_claims
     CONSTRAINT lob_id_fk FOREIGN KEY (lob) REFERENCES public.mst_lob (lob_id),
     CONSTRAINT penyebab_claim_fk FOREIGN KEY (penyebab_claim) REFERENCES public.mst_penyebab_claims (penyebab_claim_id)
 );
+
+-- public.v_klaim_summary source
+CREATE OR REPLACE VIEW public.vw_klaim
+AS SELECT ml.lob_name AS lob,
+          mpc.penyebab_claim AS penyebab_klaim,
+          tc.periode AS periode,
+          count(tc.lob) AS jumlah_nasabah,
+          round(sum(replace(tc.nilai_claim::text, ','::text, '.'::text)::numeric), 2)::text AS beban_klaim
+   FROM trx_claims tc
+            JOIN mst_lob ml ON tc.lob::text = ml.lob_id::text
+            JOIN mst_penyebab_claims mpc ON tc.penyebab_claim::text = mpc.penyebab_claim_id::text
+   GROUP BY ml.lob_name, mpc.penyebab_claim, tc.periode, ml.lob_id
+   ORDER BY ml.lob_id;
